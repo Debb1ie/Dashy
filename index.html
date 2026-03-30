@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intégra — Business Ethics Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f3ee;
+    --surface: #ffffff;
+    --surface2: #f0ede6;
+    --text: #1a1816;
+    --text2: #6b6560;
+    --text3: #a09b94;
+    --border: #e0dbd3;
+    --accent: #2d5a3d;
+    --accent2: #4a8c60;
+    --accent-light: #e8f2eb;
+    --gold: #c4973a;
+    --gold-light: #fdf4e3;
+    --danger: #c0392b;
+    --danger-light: #fdf0ee;
+    --info: #1a5276;
+    --info-light: #eaf2f8;
+    --warn: #8b5e0a;
+    --warn-light: #fef9ec;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+  }
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: var(--text);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-logo h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    color: #fff;
+  }
+  .sidebar-logo span {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .sidebar-nav { flex: 1; padding: 16px 0; }
+  .nav-section {
+    padding: 8px 24px 4px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    font-weight: 600;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 24px;
+    cursor: pointer;
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    border-left: 2px solid transparent;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .nav-item.active {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border-left-color: #7eb893;
+  }
+  .nav-icon { width: 18px; height: 18px; opacity: 0.7; }
+  .nav-item.active .nav-icon { opacity: 1; }
+  .sidebar-footer {
+    padding: 20px 24px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .user-badge {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--accent2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: #fff;
+  }
+  .user-info p { font-size: 13px; color: #fff; font-weight: 500; }
+  .user-info span { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* MAIN */
+  .main {
+    margin-left: 240px;
+    flex: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--text);
+  }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .btn {
+    padding: 8px 18px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #245033; }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .btn-outline:hover { background: var(--surface2); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #a93226; }
+  .btn-sm { padding: 5px 12px; font-size: 13px; }
+
+  /* CONTENT */
+  .content { padding: 32px; flex: 1; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* STAT CARDS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .stat-card.green::before { background: var(--accent2); }
+  .stat-card.gold::before { background: var(--gold); }
+  .stat-card.blue::before { background: #2980b9; }
+  .stat-card.red::before { background: var(--danger); }
+  .stat-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-family: 'DM Serif Display', serif; color: var(--text); }
+  .stat-sub { font-size: 12px; color: var(--text2); margin-top: 4px; }
+  .stat-badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .badge-up { background: var(--accent-light); color: var(--accent); }
+  .badge-down { background: var(--danger-light); color: var(--danger); }
+  .badge-neutral { background: var(--info-light); color: var(--info); }
+  .badge-warn { background: var(--warn-light); color: var(--warn); }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+  }
+  .card-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--text);
+  }
+  .card-body { padding: 24px; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  .td-actions { display: flex; gap: 6px; }
+
+  /* ETHICS SCORE */
+  .ethics-bar-wrap { margin: 4px 0; }
+  .ethics-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .ethics-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+  .fill-high { background: var(--accent2); }
+  .fill-med { background: var(--gold); }
+  .fill-low { background: var(--danger); }
+
+  /* STATUS PILL */
+  .status {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 500;
+  }
+  .status::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; display: block;
+  }
+  .status-active { background: var(--accent-light); color: var(--accent); }
+  .status-active::before { background: var(--accent2); }
+  .status-pending { background: var(--warn-light); color: var(--warn); }
+  .status-pending::before { background: var(--gold); }
+  .status-inactive { background: var(--surface2); color: var(--text3); }
+  .status-inactive::before { background: var(--text3); }
+  .status-flagged { background: var(--danger-light); color: var(--danger); }
+  .status-flagged::before { background: var(--danger); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    width: 520px;
+    max-width: 95vw;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+  }
+  .modal-close {
+    background: none; border: none; cursor: pointer;
+    font-size: 20px; color: var(--text3); line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 24px; }
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+
+  /* FORM */
+  .form-row { margin-bottom: 16px; }
+  .form-row label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+  .form-row input,
+  .form-row select,
+  .form-row textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--surface);
+    transition: border 0.2s;
+    outline: none;
+  }
+  .form-row input:focus,
+  .form-row select:focus,
+  .form-row textarea:focus {
+    border-color: var(--accent2);
+    box-shadow: 0 0 0 3px rgba(74,140,96,0.1);
+  }
+  .form-row textarea { resize: vertical; min-height: 80px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* ETHICS NOTICE */
+  .ethics-notice {
+    background: var(--accent-light);
+    border: 1px solid #b8d9c2;
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--accent);
+    line-height: 1.5;
+  }
+  .ethics-notice-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* SEARCH */
+  .search-box {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+  }
+  .search-box input {
+    border: none; background: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--text);
+    outline: none; width: 200px;
+  }
+  .search-box input::placeholder { color: var(--text3); }
+
+  /* TOAST */
+  .toast-container {
+    position: fixed; bottom: 24px; right: 24px; z-index: 300;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .toast {
+    background: var(--text);
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    box-shadow: var(--shadow-lg);
+    animation: toastIn 0.3s ease;
+    max-width: 300px;
+  }
+  @keyframes toastIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  .toast.success { border-left: 3px solid var(--accent2); }
+  .toast.error { border-left: 3px solid var(--danger); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center; padding: 48px 24px;
+    color: var(--text3);
+  }
+  .empty-state p { font-size: 15px; margin-top: 8px; }
+
+  /* ETHICS PAGE SPECIFICS */
+  .ethics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .ethics-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .ethics-card-icon {
+    width: 40px; height: 40px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 12px;
+  }
+  .ethics-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px; margin-bottom: 6px;
+  }
+  .ethics-card p { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+  /* CHART BARS */
+  .mini-chart { display: flex; align-items: flex-end; gap: 6px; height: 60px; }
+  .mini-bar {
+    flex: 1; border-radius: 3px 3px 0 0;
+    background: var(--accent-light);
+    transition: background 0.2s;
+    position: relative;
+  }
+  .mini-bar:hover { background: var(--accent2); }
+  .mini-bar-label {
+    position: absolute; bottom: -18px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px; color: var(--text3);
+    white-space: nowrap;
+  }
+
+  /* CONFIRM DIALOG */
+  .confirm-msg { font-size: 14px; color: var(--text2); line-height: 1.6; }
+  .confirm-warn {
+    background: var(--danger-light);
+    border: 1px solid #e8b4b0;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--danger);
+    margin-top: 12px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .ethics-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>Intégra</h1>
+    <span>Business Dashboard</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="1.5"/></svg>
+      Dashboard
+    </div>
+
+    <div class="nav-section">Management</div>
+    <div class="nav-item" onclick="showPage('employees', this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Employees
+    </div>
+    <div class="nav-item" onclick="showPage('partners', this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="7" width="8" height="10" rx="1" stroke-width="1.5"/><rect x="13" y="4" width="8" height="13" rx="1" stroke-width="1.5"/></svg>
+      Partners
+    </div>
+    <div class="nav-item" onclick="showPage('projects', this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Projects
+    </div>
+
+    <div class="nav-section">Ethics & Compliance</div>
+    <div class="nav-item" onclick="showPage('ethics', this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6.5 4.7 2.5 7.5L12 17.3 6 21.7l2.5-7.5L2 9.5h7.5z" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      Ethics Center
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-badge">
+      <div class="user-avatar">AD</div>
+      <div class="user-info">
+        <p>Admin User</p>
+        <span>Administrator</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard Overview</div>
+    <div class="topbar-right">
+      <div class="search-box">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke-width="2"/></svg>
+        <input type="text" placeholder="Search..." id="global-search" oninput="handleSearch(this.value)">
+      </div>
+      <button class="btn btn-primary" id="add-btn" onclick="openAddModal()" style="display:none">+ Add New</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <div class="stat-label">Total Employees</div>
+          <div class="stat-value" id="stat-emp">0</div>
+          <div class="stat-sub"><span class="stat-badge badge-up" id="stat-emp-badge">Loading...</span></div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-label">Active Partners</div>
+          <div class="stat-value" id="stat-part">0</div>
+          <div class="stat-sub"><span class="stat-badge badge-neutral" id="stat-part-badge">Loading...</span></div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Active Projects</div>
+          <div class="stat-value" id="stat-proj">0</div>
+          <div class="stat-sub"><span class="stat-badge badge-up" id="stat-proj-badge">Loading...</span></div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Ethics Score</div>
+          <div class="stat-value" id="stat-ethics">0%</div>
+          <div class="stat-sub"><span class="stat-badge" id="stat-ethics-badge">Loading...</span></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Activity</span>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div id="activity-feed" style="max-height:320px;overflow-y:auto">
+              <div style="padding:20px;color:var(--text3);font-size:14px">No recent activity.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Ethics Principles</span>
+          </div>
+          <div class="card-body">
+            <div class="ethics-card" style="margin-bottom:12px;box-shadow:none;border-color:var(--border)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span style="font-size:13px;font-weight:500">Transparency</span>
+                <span style="font-size:13px;color:var(--accent)" id="principle-trans">92%</span>
+              </div>
+              <div class="ethics-bar"><div class="ethics-bar-fill fill-high" id="bar-trans" style="width:92%"></div></div>
+            </div>
+            <div class="ethics-card" style="margin-bottom:12px;box-shadow:none;border-color:var(--border)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span style="font-size:13px;font-weight:500">Fairness & Equity</span>
+                <span style="font-size:13px;color:var(--accent)" id="principle-fair">88%</span>
+              </div>
+              <div class="ethics-bar"><div class="ethics-bar-fill fill-high" id="bar-fair" style="width:88%"></div></div>
+            </div>
+            <div class="ethics-card" style="margin-bottom:12px;box-shadow:none;border-color:var(--border)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span style="font-size:13px;font-weight:500">Accountability</span>
+                <span style="font-size:13px;color:var(--gold)" id="principle-acc">74%</span>
+              </div>
+              <div class="ethics-bar"><div class="ethics-bar-fill fill-med" id="bar-acc" style="width:74%"></div></div>
+            </div>
+            <div class="ethics-card" style="box-shadow:none;border-color:var(--border)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <span style="font-size:13px;font-weight:500">Environmental Responsibility</span>
+                <span style="font-size:13px;color:var(--accent)" id="principle-env">81%</span>
+              </div>
+              <div class="ethics-bar"><div class="ethics-bar-fill fill-high" id="bar-env" style="width:81%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPLOYEES -->
+    <div class="page" id="page-employees">
+      <div class="ethics-notice">
+        <span class="ethics-notice-icon">🌿</span>
+        <div><strong>Ethical HR Commitment:</strong> All employee records are handled with full confidentiality and respect. Data is collected only for legitimate business purposes and managed in compliance with data protection standards.</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Employee Records</span>
+          <span style="font-size:13px;color:var(--text3)" id="emp-count-label">0 employees</span>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Role</th>
+                <th>Ethics Score</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="emp-tbody"></tbody>
+          </table>
+          <div id="emp-empty" class="empty-state" style="display:none">
+            <svg width="40" height="40" fill="none" stroke="var(--text3)" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke-width="1.5"/></svg>
+            <p>No employees yet. Add your first team member.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARTNERS -->
+    <div class="page" id="page-partners">
+      <div class="ethics-notice">
+        <span class="ethics-notice-icon">🤝</span>
+        <div><strong>Responsible Partnerships:</strong> We only partner with organizations that demonstrate ethical business practices, respect for human rights, and commitment to sustainability. Ethics scores reflect due diligence assessments.</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Business Partners</span>
+          <span style="font-size:13px;color:var(--text3)" id="part-count-label">0 partners</span>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead>
+              <tr>
+                <th>Organization</th>
+                <th>Industry</th>
+                <th>Contact</th>
+                <th>Ethics Rating</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="part-tbody"></tbody>
+          </table>
+          <div id="part-empty" class="empty-state" style="display:none">
+            <svg width="40" height="40" fill="none" stroke="var(--text3)" viewBox="0 0 24 24"><rect x="3" y="7" width="8" height="10" rx="1" stroke-width="1.5"/><rect x="13" y="4" width="8" height="13" rx="1" stroke-width="1.5"/></svg>
+            <p>No partners yet. Add your first business partner.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="page" id="page-projects">
+      <div class="ethics-notice">
+        <span class="ethics-notice-icon">📋</span>
+        <div><strong>Purposeful Work:</strong> Every project is assessed for its social impact, resource use, and alignment with our organizational values. Projects should create genuine value — not just profit.</div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Projects</span>
+          <span style="font-size:13px;color:var(--text3)" id="proj-count-label">0 projects</span>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead>
+              <tr>
+                <th>Project Name</th>
+                <th>Team Lead</th>
+                <th>Budget</th>
+                <th>Impact Score</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="proj-tbody"></tbody>
+          </table>
+          <div id="proj-empty" class="empty-state" style="display:none">
+            <svg width="40" height="40" fill="none" stroke="var(--text3)" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-width="1.5"/></svg>
+            <p>No projects yet. Start your first project.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ETHICS CENTER -->
+    <div class="page" id="page-ethics">
+      <div class="ethics-grid">
+        <div class="ethics-card">
+          <div class="ethics-card-icon" style="background:#e8f5e9;font-size:20px">🌿</div>
+          <h3>Environmental Stewardship</h3>
+          <p>Minimize environmental footprint. Prioritize sustainable sourcing, reduce waste, and measure carbon impact in every decision.</p>
+        </div>
+        <div class="ethics-card">
+          <div class="ethics-card-icon" style="background:#fff3e0;font-size:20px">⚖️</div>
+          <h3>Fairness & Non-Discrimination</h3>
+          <p>Every person deserves equal opportunity regardless of gender, race, religion, or background. Zero tolerance for discrimination.</p>
+        </div>
+        <div class="ethics-card">
+          <div class="ethics-card-icon" style="background:#e3f2fd;font-size:20px">🔍</div>
+          <h3>Transparency & Honesty</h3>
+          <p>Communicate openly with stakeholders. No deceptive practices, hidden fees, or misleading information — ever.</p>
+        </div>
+        <div class="ethics-card">
+          <div class="ethics-card-icon" style="background:#fce4ec;font-size:20px">🛡️</div>
+          <h3>Data Privacy & Security</h3>
+          <p>Protect employee and customer data as a matter of respect and legal obligation. Collect only what is necessary.</p>
+        </div>
+        <div class="ethics-card">
+          <div class="ethics-card-icon" style="background:#f3e5f5;font-size:20px">🤲</div>
+          <h3>Community Responsibility</h3>
+          <p>Business should benefit the communities it operates in — through fair wages, local hiring, and social contributions.</p>
+        </div>
+        <div class="ethics-card">
+          <div class="ethics-card-icon" style="background:#e8f5e9;font-size:20px">📣</div>
+          <h3>Whistleblower Protection</h3>
+          <p>Anyone who reports unethical behavior is protected from retaliation. Speak up safely — integrity depends on it.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Compliance Log</span>
+          <button class="btn btn-outline btn-sm" onclick="openComplianceModal()">+ Log Entry</button>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Reported By</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="comp-tbody"></tbody>
+          </table>
+          <div id="comp-empty" class="empty-state" style="display:none">
+            <span style="font-size:32px">✅</span>
+            <p>No compliance entries yet. This is a good sign!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- MODALS -->
+
+<!-- Employee Modal -->
+<div class="modal-overlay" id="modal-emp">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="emp-modal-title">Add Employee</span>
+      <button class="modal-close" onclick="closeModal('modal-emp')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="ethics-notice">
+        <span class="ethics-notice-icon">🔒</span>
+        <div>Employee data is confidential. Only authorized personnel may view or modify records.</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Full Name *</label>
+          <input type="text" id="emp-name" placeholder="e.g. Maria Santos">
+        </div>
+        <div class="form-row">
+          <label>Department *</label>
+          <select id="emp-dept">
+            <option value="">Select department</option>
+            <option>Engineering</option>
+            <option>Marketing</option>
+            <option>Finance</option>
+            <option>Operations</option>
+            <option>Human Resources</option>
+            <option>Legal & Compliance</option>
+            <option>Sales</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Role / Position *</label>
+          <input type="text" id="emp-role" placeholder="e.g. Senior Developer">
+        </div>
+        <div class="form-row">
+          <label>Status</label>
+          <select id="emp-status">
+            <option value="active">Active</option>
+            <option value="pending">Pending Onboarding</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Ethics Training Score (0–100)</label>
+        <input type="number" id="emp-ethics" min="0" max="100" placeholder="e.g. 87">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-emp')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEmployee()">Save Employee</button>
+    </div>
+  </div>
+</div>
+
+<!-- Partner Modal -->
+<div class="modal-overlay" id="modal-part">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="part-modal-title">Add Partner</span>
+      <button class="modal-close" onclick="closeModal('modal-part')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="ethics-notice">
+        <span class="ethics-notice-icon">⚖️</span>
+        <div>Partners must complete an ethics due diligence review. Only work with organizations that share our values.</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Organization Name *</label>
+          <input type="text" id="part-name" placeholder="e.g. GreenCo Solutions">
+        </div>
+        <div class="form-row">
+          <label>Industry *</label>
+          <select id="part-industry">
+            <option value="">Select industry</option>
+            <option>Technology</option>
+            <option>Manufacturing</option>
+            <option>Finance</option>
+            <option>Healthcare</option>
+            <option>Logistics</option>
+            <option>Retail</option>
+            <option>Education</option>
+            <option>Non-Profit</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Contact Person *</label>
+          <input type="text" id="part-contact" placeholder="e.g. John Reyes">
+        </div>
+        <div class="form-row">
+          <label>Status</label>
+          <select id="part-status">
+            <option value="active">Active Partner</option>
+            <option value="pending">Under Review</option>
+            <option value="inactive">Inactive</option>
+            <option value="flagged">Flagged for Review</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Ethics Rating (0–100)</label>
+        <input type="number" id="part-ethics" min="0" max="100" placeholder="Based on due diligence score">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-part')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePartner()">Save Partner</button>
+    </div>
+  </div>
+</div>
+
+<!-- Project Modal -->
+<div class="modal-overlay" id="modal-proj">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="proj-modal-title">Add Project</span>
+      <button class="modal-close" onclick="closeModal('modal-proj')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="ethics-notice">
+        <span class="ethics-notice-icon">📋</span>
+        <div>Projects must have a clear social value statement. Consider the impact on stakeholders, environment, and community.</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Project Name *</label>
+          <input type="text" id="proj-name" placeholder="e.g. Community Portal">
+        </div>
+        <div class="form-row">
+          <label>Team Lead *</label>
+          <input type="text" id="proj-lead" placeholder="e.g. Ana dela Cruz">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Budget (PHP)</label>
+          <input type="number" id="proj-budget" placeholder="e.g. 500000">
+        </div>
+        <div class="form-row">
+          <label>Status</label>
+          <select id="proj-status">
+            <option value="active">Active</option>
+            <option value="pending">Planning</option>
+            <option value="inactive">Completed</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Social Impact Score (0–100)</label>
+        <input type="number" id="proj-impact" min="0" max="100" placeholder="Estimated social value score">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-proj')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- Compliance Modal -->
+<div class="modal-overlay" id="modal-comp">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Log Compliance Entry</span>
+      <button class="modal-close" onclick="closeModal('modal-comp')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Category *</label>
+          <select id="comp-cat">
+            <option>Data Privacy</option>
+            <option>Environmental</option>
+            <option>Labor Rights</option>
+            <option>Financial Integrity</option>
+            <option>Anti-Corruption</option>
+            <option>Whistleblower Report</option>
+            <option>Supplier Ethics</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Reported By *</label>
+          <input type="text" id="comp-by" placeholder="Name or anonymous">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Description *</label>
+        <textarea id="comp-desc" placeholder="Describe the compliance matter in detail..."></textarea>
+      </div>
+      <div class="form-row">
+        <label>Resolution Status</label>
+        <select id="comp-status">
+          <option value="pending">Under Review</option>
+          <option value="active">Resolved</option>
+          <option value="flagged">Escalated</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-comp')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCompliance()">Log Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Confirm Deletion</span>
+      <button class="modal-close" onclick="closeModal('modal-confirm')">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="confirm-msg" id="confirm-msg">Are you sure you want to delete this record?</p>
+      <div class="confirm-warn">⚠️ This action cannot be undone. Ensure you have proper authorization to delete this record.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-confirm')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Delete Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toasts"></div>
+
+<script>
+// ========== STATE ==========
+let state = {
+  employees: [
+    { id: 1, name: 'Maria Santos', dept: 'Engineering', role: 'Lead Developer', ethics: 94, status: 'active' },
+    { id: 2, name: 'Juan dela Cruz', dept: 'Human Resources', role: 'HR Manager', ethics: 88, status: 'active' },
+    { id: 3, name: 'Anna Reyes', dept: 'Finance', role: 'Financial Analyst', ethics: 76, status: 'pending' },
+    { id: 4, name: 'Carlo Mendoza', dept: 'Operations', role: 'Operations Head', ethics: 91, status: 'active' },
+  ],
+  partners: [
+    { id: 1, name: 'GreenTech PH', industry: 'Technology', contact: 'Eric Lim', ethics: 89, status: 'active' },
+    { id: 2, name: 'SustainaLogix', industry: 'Logistics', contact: 'Carla Tan', ethics: 72, status: 'pending' },
+  ],
+  projects: [
+    { id: 1, name: 'Community Digital Hub', lead: 'Maria Santos', budget: 850000, impact: 92, status: 'active' },
+    { id: 2, name: 'Green Office Initiative', lead: 'Carlo Mendoza', budget: 320000, impact: 85, status: 'active' },
+    { id: 3, name: 'Ethics Training Platform', lead: 'Juan dela Cruz', budget: 150000, impact: 97, status: 'pending' },
+  ],
+  compliance: [],
+  nextId: { emp: 5, part: 3, proj: 4, comp: 1 },
+  editMode: null,
+  editId: null,
+  deleteTarget: null,
+  activity: []
+};
+
+// ========== NAV ==========
+function showPage(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  el.classList.add('active');
+  const titles = { dashboard: 'Dashboard Overview', employees: 'Employee Management', partners: 'Business Partners', projects: 'Project Management', ethics: 'Ethics & Compliance Center' };
+  document.getElementById('page-title').textContent = titles[page];
+  const addBtn = document.getElementById('add-btn');
+  const labels = { employees: '+ Add Employee', partners: '+ Add Partner', projects: '+ Add Project' };
+  if (labels[page]) { addBtn.style.display = 'inline-flex'; addBtn.textContent = labels[page]; }
+  else addBtn.style.display = 'none';
+  document.getElementById('global-search').value = '';
+  if (page !== 'dashboard') renderAll();
+  else updateStats();
+}
+
+// ========== RENDER ==========
+function renderAll() {
+  renderEmployees();
+  renderPartners();
+  renderProjects();
+  renderCompliance();
+  updateStats();
+  renderActivity();
+}
+
+function ethicsBar(score) {
+  const cls = score >= 85 ? 'fill-high' : score >= 65 ? 'fill-med' : 'fill-low';
+  const col = score >= 85 ? 'var(--accent)' : score >= 65 ? 'var(--gold)' : 'var(--danger)';
+  return `<div style="display:flex;align-items:center;gap:8px">
+    <div class="ethics-bar" style="width:70px"><div class="ethics-bar-fill ${cls}" style="width:${score}%"></div></div>
+    <span style="font-size:13px;color:${col};font-weight:500">${score}</span>
+  </div>`;
+}
+
+function statusBadge(s) {
+  const map = { active: 'status-active', pending: 'status-pending', inactive: 'status-inactive', flagged: 'status-flagged' };
+  const labels = { active: 'Active', pending: 'Pending', inactive: 'Inactive', flagged: 'Flagged' };
+  return `<span class="status ${map[s]}">${labels[s]}</span>`;
+}
+
+function actionBtns(entity, id) {
+  return `<div class="td-actions">
+    <button class="btn btn-outline btn-sm" onclick="editRecord('${entity}', ${id})">Edit</button>
+    <button class="btn btn-sm" style="background:var(--danger-light);color:var(--danger);border:1px solid #e8b4b0" onclick="deleteRecord('${entity}', ${id})">Delete</button>
+  </div>`;
+}
+
+function renderEmployees(filter='') {
+  const tbody = document.getElementById('emp-tbody');
+  const empty = document.getElementById('emp-empty');
+  const label = document.getElementById('emp-count-label');
+  const data = state.employees.filter(e => !filter || e.name.toLowerCase().includes(filter) || e.dept.toLowerCase().includes(filter) || e.role.toLowerCase().includes(filter));
+  label.textContent = state.employees.length + ' employee' + (state.employees.length !== 1 ? 's' : '');
+  if (!data.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = data.map(e => `<tr>
+    <td><div style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--accent)">${e.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+      <span style="font-weight:500">${e.name}</span>
+    </div></td>
+    <td style="color:var(--text2)">${e.dept}</td>
+    <td>${e.role}</td>
+    <td>${ethicsBar(e.ethics)}</td>
+    <td>${statusBadge(e.status)}</td>
+    <td>${actionBtns('emp', e.id)}</td>
+  </tr>`).join('');
+}
+
+function renderPartners(filter='') {
+  const tbody = document.getElementById('part-tbody');
+  const empty = document.getElementById('part-empty');
+  const label = document.getElementById('part-count-label');
+  const data = state.partners.filter(p => !filter || p.name.toLowerCase().includes(filter) || p.industry.toLowerCase().includes(filter) || p.contact.toLowerCase().includes(filter));
+  label.textContent = state.partners.length + ' partner' + (state.partners.length !== 1 ? 's' : '');
+  if (!data.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = data.map(p => `<tr>
+    <td><div style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;border-radius:var(--radius-sm);background:var(--gold-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--gold)">${p.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+      <span style="font-weight:500">${p.name}</span>
+    </div></td>
+    <td><span class="stat-badge badge-neutral" style="font-size:12px">${p.industry}</span></td>
+    <td style="color:var(--text2)">${p.contact}</td>
+    <td>${ethicsBar(p.ethics)}</td>
+    <td>${statusBadge(p.status)}</td>
+    <td>${actionBtns('part', p.id)}</td>
+  </tr>`).join('');
+}
+
+function renderProjects(filter='') {
+  const tbody = document.getElementById('proj-tbody');
+  const empty = document.getElementById('proj-empty');
+  const label = document.getElementById('proj-count-label');
+  const data = state.projects.filter(p => !filter || p.name.toLowerCase().includes(filter) || p.lead.toLowerCase().includes(filter));
+  label.textContent = state.projects.length + ' project' + (state.projects.length !== 1 ? 's' : '');
+  if (!data.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = data.map(p => `<tr>
+    <td><span style="font-weight:500">${p.name}</span></td>
+    <td style="color:var(--text2)">${p.lead}</td>
+    <td style="font-variant-numeric:tabular-nums">₱${Number(p.budget).toLocaleString()}</td>
+    <td>${ethicsBar(p.impact)}</td>
+    <td>${statusBadge(p.status)}</td>
+    <td>${actionBtns('proj', p.id)}</td>
+  </tr>`).join('');
+}
+
+function renderCompliance(filter='') {
+  const tbody = document.getElementById('comp-tbody');
+  const empty = document.getElementById('comp-empty');
+  const data = state.compliance.filter(c => !filter || c.cat.toLowerCase().includes(filter) || c.desc.toLowerCase().includes(filter) || c.by.toLowerCase().includes(filter));
+  if (!data.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = data.map(c => `<tr>
+    <td style="color:var(--text2);white-space:nowrap">${c.date}</td>
+    <td><span class="stat-badge badge-neutral" style="font-size:12px">${c.cat}</span></td>
+    <td style="max-width:280px;color:var(--text2)">${c.desc}</td>
+    <td>${c.by}</td>
+    <td>${statusBadge(c.status)}</td>
+    <td>${actionBtns('comp', c.id)}</td>
+  </tr>`).join('');
+}
+
+function updateStats() {
+  document.getElementById('stat-emp').textContent = state.employees.length;
+  document.getElementById('stat-part').textContent = state.partners.filter(p=>p.status==='active').length;
+  document.getElementById('stat-proj').textContent = state.projects.filter(p=>p.status==='active').length;
+
+  const empBadge = document.getElementById('stat-emp-badge');
+  empBadge.textContent = state.employees.filter(e=>e.status==='active').length + ' active';
+
+  const partBadge = document.getElementById('stat-part-badge');
+  partBadge.textContent = state.partners.length + ' total';
+
+  const projBadge = document.getElementById('stat-proj-badge');
+  projBadge.textContent = state.projects.filter(p=>p.status==='pending').length + ' pending';
+
+  const allScores = [...state.employees.map(e=>e.ethics), ...state.partners.map(p=>p.ethics), ...state.projects.map(p=>p.impact)];
+  const avg = allScores.length ? Math.round(allScores.reduce((a,b)=>a+b,0)/allScores.length) : 0;
+  document.getElementById('stat-ethics').textContent = avg + '%';
+  const eb = document.getElementById('stat-ethics-badge');
+  if (avg >= 85) { eb.textContent = 'Excellent'; eb.className = 'stat-badge badge-up'; }
+  else if (avg >= 70) { eb.textContent = 'Good'; eb.className = 'stat-badge badge-neutral'; }
+  else { eb.textContent = 'Needs Improvement'; eb.className = 'stat-badge badge-down'; }
+}
+
+function renderActivity() {
+  const feed = document.getElementById('activity-feed');
+  if (!state.activity.length) {
+    feed.innerHTML = '<div style="padding:20px;color:var(--text3);font-size:14px">No recent activity.</div>';
+    return;
+  }
+  feed.innerHTML = state.activity.slice(0,15).map(a => `
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:flex-start">
+      <div style="width:30px;height:30px;border-radius:50%;background:${a.color}22;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">${a.icon}</div>
+      <div>
+        <p style="font-size:13px;color:var(--text)">${a.msg}</p>
+        <span style="font-size:11px;color:var(--text3)">${a.time}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function logActivity(icon, msg, color='#2d5a3d') {
+  const now = new Date();
+  state.activity.unshift({ icon, msg, color, time: now.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit' }) + ' today' });
+  renderActivity();
+}
+
+// ========== MODALS ==========
+function openAddModal() {
+  const page = document.querySelector('.nav-item.active').textContent.trim().toLowerCase();
+  if (page.includes('employee')) { state.editMode = null; document.getElementById('emp-modal-title').textContent = 'Add Employee'; clearEmpForm(); document.getElementById('modal-emp').classList.add('open'); }
+  else if (page.includes('partner')) { state.editMode = null; document.getElementById('part-modal-title').textContent = 'Add Partner'; clearPartForm(); document.getElementById('modal-part').classList.add('open'); }
+  else if (page.includes('project')) { state.editMode = null; document.getElementById('proj-modal-title').textContent = 'Add Project'; clearProjForm(); document.getElementById('modal-proj').classList.add('open'); }
+}
+
+function openComplianceModal() {
+  state.editMode = null; state.editId = null;
+  ['comp-cat','comp-by','comp-desc','comp-status'].forEach(id => { const el = document.getElementById(id); if(el.tagName==='SELECT') el.selectedIndex=0; else el.value=''; });
+  document.getElementById('modal-comp').classList.add('open');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function clearEmpForm() { ['emp-name','emp-role','emp-ethics'].forEach(id=>document.getElementById(id).value=''); document.getElementById('emp-dept').value=''; document.getElementById('emp-status').value='active'; }
+function clearPartForm() { ['part-name','part-contact','part-ethics'].forEach(id=>document.getElementById(id).value=''); document.getElementById('part-industry').value=''; document.getElementById('part-status').value='active'; }
+function clearProjForm() { ['proj-name','proj-lead','proj-budget','proj-impact'].forEach(id=>document.getElementById(id).value=''); document.getElementById('proj-status').value='active'; }
+
+// ========== CRUD ==========
+function saveEmployee() {
+  const name = document.getElementById('emp-name').value.trim();
+  const dept = document.getElementById('emp-dept').value;
+  const role = document.getElementById('emp-role').value.trim();
+  const ethics = parseInt(document.getElementById('emp-ethics').value) || 80;
+  const status = document.getElementById('emp-status').value;
+  if (!name || !dept || !role) { toast('Please fill in all required fields.', 'error'); return; }
+  if (state.editMode === 'emp') {
+    const i = state.employees.findIndex(e=>e.id===state.editId);
+    state.employees[i] = { ...state.employees[i], name, dept, role, ethics: Math.min(100, Math.max(0, ethics)), status };
+    logActivity('✏️', `Updated employee: ${name}`, '#1a5276');
+    toast('Employee updated successfully.', 'success');
+  } else {
+    state.employees.push({ id: state.nextId.emp++, name, dept, role, ethics: Math.min(100, Math.max(0, ethics)), status });
+    logActivity('👤', `New employee added: ${name}`, '#2d5a3d');
+    toast('Employee added successfully.', 'success');
+  }
+  closeModal('modal-emp'); renderEmployees(); updateStats();
+}
+
+function savePartner() {
+  const name = document.getElementById('part-name').value.trim();
+  const industry = document.getElementById('part-industry').value;
+  const contact = document.getElementById('part-contact').value.trim();
+  const ethics = parseInt(document.getElementById('part-ethics').value) || 75;
+  const status = document.getElementById('part-status').value;
+  if (!name || !industry || !contact) { toast('Please fill in all required fields.', 'error'); return; }
+  if (status === 'flagged') { toast('⚠️ Partner flagged for ethics review. Leadership will be notified.', 'error'); }
+  if (state.editMode === 'part') {
+    const i = state.partners.findIndex(p=>p.id===state.editId);
+    state.partners[i] = { ...state.partners[i], name, industry, contact, ethics: Math.min(100, Math.max(0, ethics)), status };
+    logActivity('✏️', `Updated partner: ${name}`, '#8b5e0a');
+    toast('Partner updated successfully.', 'success');
+  } else {
+    state.partners.push({ id: state.nextId.part++, name, industry, contact, ethics: Math.min(100, Math.max(0, ethics)), status });
+    logActivity('🤝', `New partner added: ${name}`, '#c4973a');
+    toast('Partner added successfully.', 'success');
+  }
+  closeModal('modal-part'); renderPartners(); updateStats();
+}
+
+function saveProject() {
+  const name = document.getElementById('proj-name').value.trim();
+  const lead = document.getElementById('proj-lead').value.trim();
+  const budget = parseInt(document.getElementById('proj-budget').value) || 0;
+  const impact = parseInt(document.getElementById('proj-impact').value) || 80;
+  const status = document.getElementById('proj-status').value;
+  if (!name || !lead) { toast('Please fill in all required fields.', 'error'); return; }
+  if (state.editMode === 'proj') {
+    const i = state.projects.findIndex(p=>p.id===state.editId);
+    state.projects[i] = { ...state.projects[i], name, lead, budget, impact: Math.min(100, Math.max(0, impact)), status };
+    logActivity('✏️', `Updated project: ${name}`, '#1a5276');
+    toast('Project updated successfully.', 'success');
+  } else {
+    state.projects.push({ id: state.nextId.proj++, name, lead, budget, impact: Math.min(100, Math.max(0, impact)), status });
+    logActivity('📋', `New project started: ${name}`, '#2980b9');
+    toast('Project added successfully.', 'success');
+  }
+  closeModal('modal-proj'); renderProjects(); updateStats();
+}
+
+function saveCompliance() {
+  const cat = document.getElementById('comp-cat').value;
+  const by = document.getElementById('comp-by').value.trim();
+  const desc = document.getElementById('comp-desc').value.trim();
+  const status = document.getElementById('comp-status').value;
+  if (!by || !desc) { toast('Please fill in all required fields.', 'error'); return; }
+  const today = new Date().toLocaleDateString('en-PH');
+  if (state.editMode === 'comp') {
+    const i = state.compliance.findIndex(c=>c.id===state.editId);
+    state.compliance[i] = { ...state.compliance[i], cat, by, desc, status };
+    toast('Compliance entry updated.', 'success');
+  } else {
+    state.compliance.push({ id: state.nextId.comp++, cat, by, desc, status, date: today });
+    logActivity('⚖️', `Compliance entry logged: ${cat}`, '#c0392b');
+    toast('Compliance entry logged.', 'success');
+  }
+  closeModal('modal-comp'); renderCompliance();
+}
+
+// ========== EDIT / DELETE ==========
+function editRecord(entity, id) {
+  state.editMode = entity; state.editId = id;
+  if (entity === 'emp') {
+    const e = state.employees.find(x=>x.id===id);
+    document.getElementById('emp-name').value = e.name;
+    document.getElementById('emp-dept').value = e.dept;
+    document.getElementById('emp-role').value = e.role;
+    document.getElementById('emp-ethics').value = e.ethics;
+    document.getElementById('emp-status').value = e.status;
+    document.getElementById('emp-modal-title').textContent = 'Edit Employee';
+    document.getElementById('modal-emp').classList.add('open');
+  } else if (entity === 'part') {
+    const p = state.partners.find(x=>x.id===id);
+    document.getElementById('part-name').value = p.name;
+    document.getElementById('part-industry').value = p.industry;
+    document.getElementById('part-contact').value = p.contact;
+    document.getElementById('part-ethics').value = p.ethics;
+    document.getElementById('part-status').value = p.status;
+    document.getElementById('part-modal-title').textContent = 'Edit Partner';
+    document.getElementById('modal-part').classList.add('open');
+  } else if (entity === 'proj') {
+    const p = state.projects.find(x=>x.id===id);
+    document.getElementById('proj-name').value = p.name;
+    document.getElementById('proj-lead').value = p.lead;
+    document.getElementById('proj-budget').value = p.budget;
+    document.getElementById('proj-impact').value = p.impact;
+    document.getElementById('proj-status').value = p.status;
+    document.getElementById('proj-modal-title').textContent = 'Edit Project';
+    document.getElementById('modal-proj').classList.add('open');
+  } else if (entity === 'comp') {
+    const c = state.compliance.find(x=>x.id===id);
+    document.getElementById('comp-cat').value = c.cat;
+    document.getElementById('comp-by').value = c.by;
+    document.getElementById('comp-desc').value = c.desc;
+    document.getElementById('comp-status').value = c.status;
+    document.getElementById('modal-comp').classList.add('open');
+  }
+}
+
+let pendingDelete = null;
+function deleteRecord(entity, id) {
+  pendingDelete = { entity, id };
+  const labels = { emp: 'employee record', part: 'partner record', proj: 'project record', comp: 'compliance entry' };
+  document.getElementById('confirm-msg').textContent = `Are you sure you want to permanently delete this ${labels[entity]}? This action cannot be undone.`;
+  document.getElementById('modal-confirm').classList.add('open');
+}
+
+function confirmDelete() {
+  if (!pendingDelete) return;
+  const { entity, id } = pendingDelete;
+  if (entity === 'emp') state.employees = state.employees.filter(e=>e.id!==id);
+  else if (entity === 'part') state.partners = state.partners.filter(p=>p.id!==id);
+  else if (entity === 'proj') state.projects = state.projects.filter(p=>p.id!==id);
+  else if (entity === 'comp') state.compliance = state.compliance.filter(c=>c.id!==id);
+  logActivity('🗑️', `Record deleted from ${entity} records`, '#c0392b');
+  toast('Record deleted.', 'success');
+  closeModal('modal-confirm');
+  renderAll();
+  pendingDelete = null;
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  const f = val.toLowerCase();
+  const activePage = document.querySelector('.page.active').id;
+  if (activePage === 'page-employees') renderEmployees(f);
+  else if (activePage === 'page-partners') renderPartners(f);
+  else if (activePage === 'page-projects') renderProjects(f);
+  else if (activePage === 'page-ethics') renderCompliance(f);
+}
+
+// ========== TOAST ==========
+function toast(msg, type='success') {
+  const c = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+// ========== INIT ==========
+window.addEventListener('click', e => {
+  document.querySelectorAll('.modal-overlay').forEach(m => { if (e.target === m) m.classList.remove('open'); });
+});
+renderAll();
+logActivity('🚀', 'Dashboard initialized — welcome to Intégra', '#2d5a3d');
+</script>
+</body>
+</html>
